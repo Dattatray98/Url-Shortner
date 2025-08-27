@@ -5,14 +5,16 @@ import { type Link } from "../Types/Types";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL;
+// ✅ Use Vite env correctly
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
 const Home = () => {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [recentUrls, setRecentUrls] = useState<Link[]>([]);
   const [copied, setCopied] = useState("");
 
-  // Fetch 10 recent URLs from backend
+  // Fetch 10 recent URLs
   const fetchRecentUrls = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/recent`);
@@ -27,18 +29,15 @@ const Home = () => {
     }
   };
 
-  // On mount, fetch recent links
   useEffect(() => {
     fetchRecentUrls();
   }, []);
 
   // Handle shorten
   const handleShorten = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!url.trim()) {
-      alert("Please enter a valid URL");
-      return;
-    }
+    e?.preventDefault();
+    if (!url.trim()) return alert("Please enter a valid URL");
+
     try {
       const res = await axios.post(`${API_BASE_URL}/shorten`, {
         originalUrl: url,
@@ -46,14 +45,14 @@ const Home = () => {
       const shortLink = `${API_BASE_URL}/${res.data.shortCode}`;
       setShortUrl(shortLink);
       setUrl("");
-      fetchRecentUrls(); // refresh list
+      fetchRecentUrls();
     } catch (err) {
       console.error("Error shortening URL:", err);
       alert("Something went wrong while creating the short URL. Try again!");
     }
   };
 
-  // Copy to clipboard
+  // Copy
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -65,14 +64,11 @@ const Home = () => {
     }
   };
 
-  // Share link
+  // Share
   const handleShare = async (text: string) => {
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: "Check this shortened link",
-          url: text,
-        });
+        await navigator.share({ title: "Check this link", url: text });
       } catch (err) {
         console.error("Error sharing", err);
       }
@@ -141,25 +137,14 @@ const Home = () => {
               </motion.div>
             </AnimatePresence>
           )}
-
-          <div className="flex items-center justify-center gap-6 mt-8">
-            <button
-              type="button"
-              className="px-5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
-            >
-              See Features
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* Recent Links Section */}
+      {/* Recent Links */}
       <section className="px-25 py-10">
-        <div>
-          <h1 className="text-2xl text-gray-700 font-medium border-b border-gray-300">
-            Recent Links
-          </h1>
-        </div>
+        <h1 className="text-2xl text-gray-700 font-medium border-b border-gray-300">
+          Recent Links
+        </h1>
 
         <div className="h-[40vh] p-3">
           <div className="border-2 border-gray-300 mt-3 rounded-xl">
@@ -172,16 +157,15 @@ const Home = () => {
             <div className="mt-5 max-h-[38vh] space-y-4 overflow-y-scroll p-5 scrollbar-hidden">
               {recentUrls.map((link: Link) => (
                 <div
-                  key={link.id}
+                  key={link._id}
                   className="border border-gray-300 mx-2 py-3 px-5 rounded-xl flex justify-between items-center"
                 >
-                  {/* Original URL */}
+                  {/* Original */}
                   <div className="w-[45vh] truncate pr-2 flex gap-3 items-center justify-between">
                     <p className="text-gray-500 font-medium truncate">
                       {link.originalUrl}
                     </p>
                     <button
-                      type="button"
                       onClick={() => handleCopy(link.originalUrl)}
                       className="text-blue-600 font-medium hover:text-blue-400"
                     >
@@ -200,7 +184,6 @@ const Home = () => {
                       {link.shortUrl}
                     </a>
                     <button
-                      type="button"
                       onClick={() => handleCopy(link.shortUrl!)}
                       className="text-blue-600 font-medium hover:text-blue-400"
                     >
@@ -208,10 +191,9 @@ const Home = () => {
                     </button>
                   </div>
 
-                  {/* Share button */}
+                  {/* Share */}
                   <div className="max-w-[33%] flex justify-end gap-3">
                     <button
-                      type="button"
                       onClick={() => handleShare(link.shortUrl!)}
                       className="text-blue-600 font-medium hover:text-blue-400"
                     >
