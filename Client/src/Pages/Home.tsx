@@ -5,8 +5,7 @@ import { type Link } from "../Types/Types";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
 const Home = () => {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
