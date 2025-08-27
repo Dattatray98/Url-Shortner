@@ -7,7 +7,6 @@ export const NavLinks = [
 
 
 export interface Link {
-    [x: string]: Key | null | undefined;
     id: number;
     originalUrl: string;
     shortUrl: string;

@@ -157,6 +157,7 @@ const Home = () => {
             <div className="mt-5 max-h-[38vh] space-y-4 overflow-y-scroll p-5 scrollbar-hidden">
               {recentUrls.map((link: Link) => (
                 <div
+                  key={link.id}
                   className="border border-gray-300 mx-2 py-3 px-5 rounded-xl flex justify-between items-center"
                 >
                   {/* Original */}
