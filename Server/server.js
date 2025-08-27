@@ -7,10 +7,12 @@ const cors = require("cors");
 const Url = require("./Models/url");
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.FRONT_END_URI,
   methods: ["GET", "POST"],
 }));
+
 app.use(express.json());
+
 
 const PORT = process.env.PORT || 8000;
 
